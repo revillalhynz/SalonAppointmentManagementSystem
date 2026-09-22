@@ -103,7 +103,7 @@ namespace SalonAppointmentManagementSystem
 
                 else if (checkLogin == "2")
                 {
-                    Console.Write("Enter your Name");
+                    Console.Write("Enter your Name": );
                     string inputName = Console.ReadLine();
 
                     if (inputName == "" || inputName == null)
@@ -130,38 +130,139 @@ namespace SalonAppointmentManagementSystem
                                 //Ma'am since basic pa lang po tayo, nilagay ko po muna ito, since wala po ring example na array sa ginawa po natin.
                                 break;
                             }
+                            ////iniba ko po sa part na ito, mas ini-specify ko po yung mga choices na makikita po talaga sa Salon.
                             Console.WriteLine("Select Service:");
-                            Console.WriteLine("1- Haircut & Styling (PHP 250)");
-                            Console.WriteLine("2- Hair Color (PHP 1,5000)");
-                            Console.WriteLine("3- Manicure & Pedicure (PHP 450)");
+                            Console.WriteLine("1- Hair Service");
+                            Console.WriteLine("2- Nail Service");
                             Console.Write("Enter your Choice: ");
-                            int serviceChoice = Convert.ToInt16(Console.ReadLine());
+                            int categoryChoice = Convert.ToInt16(Console.ReadLine());
 
+                            int serviceChoice = 0;
+
+                            if (categoryChoice == 1)
+                            {
+                                Console.WriteLine("""
+
+                                            1 - Haircut / Eyebrow Shaving / Blow Dry / Flat Ironing / Shampoo (PHP 120)
+                                            2 - Hair + Detox (PHP 1,200)
+                                            3 - Haircolor + Detox (PHP 1,200)
+                                            4 - Haircolor + BK (PHP 1,490)
+                                            5 - Highlights + Detox (PHP 1,200)
+                                            6 - Highlights + BK (PHP 1,490)
+                                            7 - Nano Rebond and BK (PHP 1,600)
+                                            8 - Brazilian Keratin (solo) (PHP 500)
+                                            9  - Nano Rebond (solo) (PHP 1,200)
+                                            10 - Hair Color (solo) (PHP 990)
+                                            11 - Highlights (solo) (PHP 990)
+                                            12 - Hair Perming / Cold Wave Solution (PHP 990)
+                                        """);
+                                Console.Write("Enter your Choice: ");
+                                serviceChoice = Convert.ToInt16(Console.ReadLine());
+                            }
+
+                            else if (categoryChoice == 2)
+                            {
+                                Console.WriteLine("""
+ 
+                                            13 - Manicure with Hand Massage (PHP 250)
+                                            14 - Pedicure with Foot Massage (PHP 250)
+                                            15 - Mani-Pedi with Massage (PHP 500)
+                                            16 - Foot Spa with Foot Massage (PHP 500)
+ 
+                                        """);
+                                Console.Write("Enter your Choice: ");
+                                serviceChoice = Convert.ToInt16(Console.ReadLine());
+
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid category. Booking cancelled.");
+                                break;
+                            }
 
                             switch (serviceChoice)
                             {
                                 case 1:
-                                    bookedService = "Haircut & Styling";
-                                    bookedPrice = "Php 250";
+                                    bookedService = "Haircut / Eyebrow Shaving / Blow Dry / Flat Ironing / Shampoo ";
+                                    bookedPrice = "Php 120;
                                     break;
                                 case 2:
-                                    bookedService = "Hair Color";
-                                    bookedPrice = "PHP 1,5000";
+                                    bookedService = "Hair Detox";
+                                    bookedPrice = "PHP 1,200";
                                     break;
                                 case 3:
-                                    bookedService = "Manicure & Pedicure";
-                                    bookedPrice = "PHP 450";
+                                    bookedService = "Haircolor + Hair Detox";
+                                    bookedPrice = "PHP 1,200";
+                                    break;
+                                case 4:
+                                    bookedService = "Haircolor + BK";
+                                    bookedPrice = "PHP 1,490";
+                                    break;
+                                case 5:
+                                    bookedService = "Highlights + Detox";
+                                    bookedPrice = "PHP 1,200";
+                                    break;
+                                case 6:
+                                    bookedService = "Highlights + BK";
+                                    bookedPrice = "PHP 1,490";
+                                    break;
+                                case 7:
+                                    bookedService = "Nano Rebond and BK";
+                                    bookedPrice = "PHP 1,600";
+                                    break;
+                                case 8:
+                                    bookedService = "Brazilian Keratin (solo)";
+                                    bookedPrice = "PHP 500";
+                                    break;
+                                case 9:
+                                    bookedService = "Nano Rebond (solo)";
+                                    bookedPrice = "PHP 1,200";
+                                    break;
+                                case 10:
+                                    bookedService = "Hair Color (solo)";
+                                    bookedPrice = "PHP 990";
+                                    break;
+                                case 11:
+                                    bookedService = "Highlights (solo)";
+                                    bookedPrice = "PHP 990";
+                                    break;
+                                case 12:
+                                    bookedService = "Hair Perming (cold wave solution)";
+                                    bookedPrice = "PHP 990";
+                                    break;
+                                case 13:
+                                    bookedService = "Manicure with Hand Massage";
+                                    bookedPrice = "PHP 250";
+                                    break;
+                                case 14:
+                                    bookedService = "Pedicure with Foot Massage";
+                                    bookedPrice = "PHP 250";
+                                    break;
+                                case 15:
+                                    bookedService = "Mani-Pedi with Massage";
+                                    bookedPrice = "PHP 500";
+                                    break;
+                                case 16:
+                                    bookedService = "Foot Spa with Foot Massage";
+                                    bookedPrice = "PHP 500";
                                     break;
                                 default:
-                                    bookedService = "Haircut & Styling";
-                                    bookedPrice = "Php 250";
+                                    Console.WriteLine("Invalid service. Booking cancelled.");
+                                    bookedService = "None";
+                                    bookedPrice = "PHP 0)";
                                     break;
                             }
 
-                            Console.Write("Enter Appointment Day(Monday to Saturday)");
-                            string inputDay = Console.ReadLine();
+                            if (bookedService == "None")
+                            {
+                                break;
+                            }
 
-                            if (inputDay == "Monday" || inputDay == "Tuesday" || inputDay == "Wednesday" || inputDay == "Thursday" || inputDay == "Friday" || inputDay == "Saturday")
+                            Console.Write("Enter Appointment Day(Monday to Saturday): ");
+                            string inputDay = Console.ReadLine();
+                            string inputDayFixed = inputDay.ToLower();
+
+                            if (inputDayFixed == "monday" || inputDayFixed == "tuesday" || inputDayFixed == "wednesday" || inputDayFixed == "thursday" || inputDayFixed == "friday" || inputDayFixed == "saturday")
                             {
                                 appointmentDay = inputDay;
                             }
@@ -178,6 +279,7 @@ namespace SalonAppointmentManagementSystem
                             Console.WriteLine("2 - 1:00 PM");
                             Console.WriteLine("3 - 2:OO PM");
                             Console.WriteLine("4 - 4:OO PM");
+                            Console.Write("Enter choice: ");
                             int itemChoice = Convert.ToInt16(Console.ReadLine());
 
                             switch (itemChoice)
