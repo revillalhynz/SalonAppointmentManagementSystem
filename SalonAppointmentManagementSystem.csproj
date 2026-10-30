@@ -6,9 +6,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+	
+  <ItemGroup>
+    <Compile Remove="SalonBusinessLogic\**" />
+    <EmbeddedResource Remove="SalonBusinessLogic\**" />
+    <None Remove="SalonBusinessLogic\**" />
+  </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\OneDrive\Desktop\Advanced_Progra\SalonAppointmentManagementSystem\SalonBusinessLogic\SalonBusinessLogic.csproj" />
+    <ProjectReference Include="SalonBusinessLogic\SalonBusinessLogic.csproj" />
   </ItemGroup>
 
 </Project>
