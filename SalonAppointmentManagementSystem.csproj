@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\OneDrive\Desktop\Advanced_Progra\SalonAppointmentManagementSystem\SalonBusinessLogic\SalonBusinessLogic.csproj" />
+    <ProjectReference Include="SalonBusinessLogic\SalonBusinessLogic.csproj" />
   </ItemGroup>
 
 </Project>
