@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using SalonData;
 
 namespace SalonBusinessLogic
@@ -36,6 +37,7 @@ namespace SalonBusinessLogic
         };
 
         string[] timeSlots = new string[] { "9:00 AM", "1:00 PM", "2:00 PM", "4:00 PM" };
+        public const int BookingsPerTimeSlot = 3;
 
         List<int> chosenServices = new List<int>();
 
@@ -168,19 +170,42 @@ namespace SalonBusinessLogic
         }
         public bool IsSlotTaken(string date, int timeNumber)
         {
-            string time = timeSlots[timeNumber - 1];
+            return GetAvailableSpots(date, timeNumber) == 0;
+        }
+
+        public int GetAvailableSpots(string date, int timeNumber)
+        {
+            string time = GetTimeSlot(timeNumber);
             List<Appointment> appointments = dataService.RetrieveAllAppointments();
+            int availableSpots = BookingsPerTimeSlot;
 
             for (int i = 0; i < appointments.Count; i++)
             {
-                if (appointments[i].Date == date && appointments[i].Time == time)
+                if (appointments[i].Date == date && appointments[i].Time == time && IsFirstBookingRecord(i))
                 {
-                    return true;
+                    availableSpots--;
+                    if (availableSpots == 0)
+                    {
+                        break;
+                    }
                 }
             }
 
-            return false;
+            return availableSpots;
         }
+        public bool IsDateFull(string date)
+        {
+            for (int i = 1; i <= GetTimeSlotCount(); i++)
+            {
+                if (!IsSlotTaken(date, i))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public void ClearChosenServices()
         {
             chosenServices.Clear();
@@ -217,28 +242,84 @@ namespace SalonBusinessLogic
             return total;
         }
 
-        public void BookAppointment(string customerName, int serviceNumber, string date, int timeNumber)
+        public void BookAppointment(string customerName, int serviceNumber, string date, int timeNumber,
+            string? bookingId = null)
         {
             dataService.AddAppointment(
-                customerName,
+                customerName.Trim(),
                 serviceNames[serviceNumber - 1],
                 servicePrices[serviceNumber - 1],
                 date,
-                timeSlots[timeNumber - 1]);
+                timeSlots[timeNumber - 1],
+                bookingId);
         }
 
         public void BookChosenServices(string customerName, string date, int timeNumber)
         {
+            string bookingId = Guid.NewGuid().ToString("N");
             for (int i = 0; i < chosenServices.Count; i++)
             {
-                BookAppointment(customerName, chosenServices[i], date, timeNumber);
+                BookAppointment(customerName, chosenServices[i], date, timeNumber, bookingId);
             }
 
             chosenServices.Clear();
         }
+
+        public bool IsFirstBookingRecord(int index)
+        {
+            for (int i = 0; i < index; i++)
+            {
+                if (dataService.IsSameBooking(index, i))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool CanRequestCancellation(int index)
+        {
+            return DateTime.TryParseExact(GetDate(index), "MM/dd/yyyy", CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out DateTime date) && date >= DateTime.Today.AddDays(2);
+        }
+
+        public bool IsCancellationRequested(int index)
+        {
+            Appointment appointment = dataService.RetrieveAllAppointments()[index];
+            return appointment.CancellationRequested && IsFirstBookingRecord(index);
+        }
+
+        public bool RequestCancellation(int index, string name)
+        {
+            if (!IsOwnedBy(index, name) || !CanRequestCancellation(index) || IsCancellationRequested(index))
+            {
+                return false;
+            }
+
+            dataService.RequestCancellation(index);
+            return true;
+        }
+
+        public void ApproveCancellation(int index)
+        {
+            if (IsCancellationRequested(index))
+            {
+                dataService.RemoveRequestedBooking(index);
+            }
+        }
         public int GetAppointmentCount()
         {
             return dataService.RetrieveAllAppointments().Count;
+        }
+
+        public IEnumerable<int> GetAppointmentIndicesInDateOrder()
+        {
+            List<Appointment> appointments = dataService.RetrieveAllAppointments();
+            return Enumerable.Range(0, appointments.Count)
+                .OrderBy(index => DateTime.TryParseExact(appointments[index].Date, "MM/dd/yyyy",
+                    CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date) ? date : DateTime.MaxValue)
+                .ThenBy(index => Array.IndexOf(timeSlots, appointments[index].Time));
         }
 
         public string GetCustomerName(int index)
@@ -268,7 +349,8 @@ namespace SalonBusinessLogic
 
         public bool IsOwnedBy(int index, string name)
         {
-            return GetCustomerName(index).ToLower() == name.ToLower();
+            return string.Equals(GetCustomerName(index)?.Trim(), name.Trim(),
+                StringComparison.CurrentCultureIgnoreCase);
         }
 
         public int CountAppointmentsOf(string name)

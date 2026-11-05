@@ -52,7 +52,8 @@ namespace SalonData
             return appointments;
         }
 
-        public void AddAppointment(string customerName, string service, int price, string date, string time)
+        public void AddAppointment(string customerName, string service, int price, string date, string time,
+            string? bookingId = null)
         {
             Appointment newAppointment = new Appointment();
             newAppointment.CustomerName = customerName;
@@ -60,6 +61,7 @@ namespace SalonData
             newAppointment.Price = price;
             newAppointment.Date = date;
             newAppointment.Time = time;
+            newAppointment.BookingId = bookingId;
 
             appointments.Add(newAppointment);
             SaveDataToJsonFile();
@@ -74,6 +76,51 @@ namespace SalonData
         public void RemoveAllAppointments()
         {
             appointments.Clear();
+            SaveDataToJsonFile();
+        }
+
+        public bool IsSameBooking(int firstIndex, int secondIndex)
+        {
+            Appointment first = appointments[firstIndex];
+            Appointment second = appointments[secondIndex];
+
+            if (first.BookingId != null || second.BookingId != null)
+            {
+                return first.BookingId == second.BookingId;
+            }
+
+            // Older records used one time slot for all services in the same booking.
+            return first.Date == second.Date && first.Time == second.Time
+                && string.Equals(first.CustomerName?.Trim(), second.CustomerName?.Trim(),
+                    StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        public void RequestCancellation(int index)
+        {
+            for (int i = 0; i < appointments.Count; i++)
+            {
+                if (IsSameBooking(index, i))
+                {
+                    appointments[i].CancellationRequested = true;
+                }
+            }
+            SaveDataToJsonFile();
+        }
+
+        public void RemoveRequestedBooking(int index)
+        {
+            for (int i = appointments.Count - 1; i >= 0; i--)
+            {
+                if (i != index && IsSameBooking(index, i))
+                {
+                    appointments.RemoveAt(i);
+                    if (i < index)
+                    {
+                        index--;
+                    }
+                }
+            }
+            appointments.RemoveAt(index);
             SaveDataToJsonFile();
         }
     }
