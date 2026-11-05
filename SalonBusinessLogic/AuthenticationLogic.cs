@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SalonData;
 
 namespace SalonBusinessLogic
 {
     public class AuthenticationLogic
     {
-        string adminUsername = "Lhynz";
-        string adminPassword = "1234";
+        UserData userData = new UserData();
 
         public bool IsAdminLoginCorrect(string username, string password)
         {
-            return username == adminUsername && password == adminPassword;
+            return username == userData.adminUsername && password == userData.adminPassword;
         }
 
         public bool IsCustomerNameValid(string name)

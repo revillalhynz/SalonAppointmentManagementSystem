@@ -9,8 +9,11 @@
 	
   <ItemGroup>
     <Compile Remove="SalonBusinessLogic\**" />
+	<Compile Remove="SalonData\**" />
     <EmbeddedResource Remove="SalonBusinessLogic\**" />
+	<EmbeddedResource Remove="SalonData\**" />
     <None Remove="SalonBusinessLogic\**" />
+	<None Remove="SalonData\**" />
   </ItemGroup>
 
   <ItemGroup>

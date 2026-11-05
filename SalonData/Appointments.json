@@ -1,0 +1,23 @@
+[
+  {
+    "CustomerName": "Lhynz Revilla",
+    "Service": "Haircut + Detox",
+    "Price": 990,
+    "Date": "11/03/2026",
+    "Time": "9:00 AM"
+  },
+  {
+    "CustomerName": "Charel Guillermo",
+    "Service": "Mani-Pedi with Massage",
+    "Price": 500,
+    "Date": "11/05/2026",
+    "Time": "1:00 PM"
+  },
+  {
+    "CustomerName": "Miles Claudia",
+    "Service": "Hair Color (solo)",
+    "Price": 990,
+    "Date": "11/07/2026",
+    "Time": "4:00 PM"
+  } 
+]

@@ -1,6 +1,5 @@
 using System;
 using SalonBusinessLogic;
-using System.Collections.Generic;
 
 namespace SalonAppointmentManagementSystem
 {
@@ -12,8 +11,6 @@ namespace SalonAppointmentManagementSystem
 
             AuthenticationLogic authLogic = new AuthenticationLogic();
             AppointmentLogic appointmentLogic = new AppointmentLogic();
-
-            appointmentLogic.PopulateDummyAppointments();
 
             Console.WriteLine("\nWelcome to Salon Appointment Management System");
 
@@ -43,7 +40,7 @@ namespace SalonAppointmentManagementSystem
                         {
                             Console.WriteLine("Enter 1 - to view current Appointment");
                             Console.WriteLine("Enter 2 - to clear one Appointment");
-                            Console.WriteLine("Enter 3 - to clear Appointment");
+                            Console.WriteLine("Enter 3 - to clear all Appointments");
                             Console.WriteLine("Enter 0 - to Logout");
 
 
@@ -154,9 +151,9 @@ namespace SalonAppointmentManagementSystem
                     {
                         Console.WriteLine($"\nWelcome {inputName}! Please Choose:");
 
-                        Console.WriteLine("Type 1 - to book an appoinment");
+                        Console.WriteLine("Type 1 - to book an appointment");
                         Console.WriteLine("Type 2 - to view appoinment details");
-                        Console.WriteLine("Type 3 - to book exit");
+                        Console.WriteLine("Type 3 - to exit");
 
                         Console.Write("Enter your Choice: ");
                         int customerChoice = Convert.ToInt16(Console.ReadLine());
@@ -164,7 +161,7 @@ namespace SalonAppointmentManagementSystem
                         switch (customerChoice)
                         {
                             case 1:
-                                List<int> chosenServices = new List<int>();
+                                appointmentLogic.ClearChosenServices();
                                 string addMore = "y";
 
                                 while (addMore == "y")
@@ -193,13 +190,12 @@ namespace SalonAppointmentManagementSystem
                                         {
                                             Console.WriteLine("Invalid Service.");                                     
                                         }
-                                        else if (chosenServices.Contains(serviceChoice))
+                                        else if (!appointmentLogic.AddChosenService(serviceChoice))
                                         {
                                             Console.WriteLine("You already added that service.");
                                         }
                                         else
                                         {
-                                            chosenServices.Add(serviceChoice);
                                             Console.WriteLine($"Added: {appointmentLogic.GetServiceName(serviceChoice)}");
                                         }
                                     }
@@ -208,7 +204,7 @@ namespace SalonAppointmentManagementSystem
                                     addMore = Console.ReadLine();
                                 }
 
-                                if (chosenServices.Count == 0)
+                                if (appointmentLogic.GetChosenServiceCount() == 0)
                                 {
                                     Console.WriteLine("No service selected. Booking cancelled.");
                                     break;
@@ -252,35 +248,31 @@ namespace SalonAppointmentManagementSystem
                                     break;
                                 }
 
-                                int bookingTotal = 0;
                                 Console.WriteLine("\n===== BOOKING DETAILS =====");
                                 Console.WriteLine($"Customer Name: {inputName}");
                                 Console.WriteLine($"Date: {inputDate}");
                                 Console.WriteLine($"Time: {appointmentLogic.GetTimeSlot(timeChoice)}");
                                 Console.WriteLine("Services:");
 
-                                foreach (int service in chosenServices)
+                                for (int i = 0; i < appointmentLogic.GetChosenServiceCount(); i++)
                                 {
-                                    Console.WriteLine($"  - {appointmentLogic.GetServiceName(service)} (PHP {appointmentLogic.GetServicePrice(service):N0})");
-                                    bookingTotal += appointmentLogic.GetServicePrice(service);
+                                    int service = appointmentLogic.GetChosenService(i);
+                                    Console.WriteLine($"  - {appointmentLogic.GetServiceName(service)} (PHP {appointmentLogic.GetServicePrice(service):N0})");                                 
                                 }
                                 
-                                Console.WriteLine($"Total: PHP {bookingTotal:N0}");
+                                Console.WriteLine($"Total: PHP {appointmentLogic.GetChosenServicesTotal():N0}");
 
                                 Console.Write("\nConfirm booking? (y/n): ");
                                 string confirmBooking = Console.ReadLine();
 
                                 if (confirmBooking == "y")
                                 {
-                                    foreach (int service in chosenServices)
-                                    {
-                                        appointmentLogic.BookAppointment(inputName, service, inputDate, timeChoice);
-                                    }
-
+                                    appointmentLogic.BookChosenServices(inputName, inputDate, timeChoice);
                                     Console.WriteLine("Appointment successfully booked!");
                                 }
                                 else
                                 {
+                                    appointmentLogic.ClearChosenServices();
                                     Console.WriteLine("Booking cancelled.");
                                 }
                                 break;
@@ -292,16 +284,14 @@ namespace SalonAppointmentManagementSystem
                                 }
                                 else
                                 {
-                                    int myTotal = 0;
                                     for (int i = 0; i < appointmentLogic.GetAppointmentCount(); i++)
                                     {
                                         if (appointmentLogic.IsOwnedBy(i, inputName))
                                         {
-                                            DisplayAppointment(appointmentLogic, i);
-                                            myTotal += appointmentLogic.GetPrice(i);
+                                            DisplayAppointment(appointmentLogic, i);                                      
                                         }
                                     }
-                                    Console.WriteLine($"Total of all your appointments: PHP {myTotal:N0}");
+                                    Console.WriteLine($"Total of all your appointments: PHP {appointmentLogic.GetTotalOf(inputName):N0}");
                                 }
                                 break;
 
